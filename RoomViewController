@@ -1,0 +1,83 @@
+import StreamChat
+import StreamChatClient
+import UIKit
+import VoxeetSDK
+import VoxeetUXKit
+
+class RoomViewController: ChatViewController {
+    lazy var channel = Client.shared.channel(
+        type: .messaging,
+        id: "conference_room_id",
+        extraData: ChannelExtraData(name: "Conference Room", imageURL: nil)
+    )
+    
+    let attendee = User(id: .random())
+    let speaker = User(
+        id: "speaker",
+        extraData: UserExtraData(
+            name: "Speaker",
+            avatarURL: URL(string: "https://raw.githubusercontent.com/GetStream/online-event-app-ios/main/meta/speaker.png")
+        )
+    )
+    
+    override func viewDidLoad() {
+        super.viewDidLoad()
+
+        setupViews()
+        setupHandlers()
+    }
+}
+extension String {
+    static func random(length: Int = 10) -> String {
+        let letters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
+        return String((0..<length).map{ _ in letters.randomElement()! })
+    }
+}
+extension RoomViewController {
+    func setupAttendee() {
+        Client.shared.set(user: attendee, token: .development)
+        self.presenter = .init(channel: channel)
+    }
+    
+    func setupSpeaker() {
+        Client.shared.set(user: speaker, token: .development)
+        self.presenter = .init(channel: channel)
+    }
+}
+extension RoomViewController {
+    func setupViews() {
+        setupCallButton()
+    }
+    
+    func setupCallButton() {
+        let button = UIBarButtonItem()
+        button.image = UIImage(systemName: "phone")
+        
+        navigationItem.rightBarButtonItem = button
+    }
+}
+extension RoomViewController {
+    func setupHandlers() {
+        setupCallButtonHandler()
+    }
+    
+    func setupCallButtonHandler() {
+        navigationItem.rightBarButtonItem?.target = self
+        navigationItem.rightBarButtonItem?.action = #selector(callButtonPressed)
+    }
+    
+    @objc func callButtonPressed() {
+        startCall()
+    }
+}
+extension RoomViewController {
+    func startCall() {
+        let options = VTConferenceOptions()
+        options.alias = "conference_room_id"
+        VoxeetSDK.shared.conference.create(options: options, success: { conf in
+            VoxeetSDK.shared.conference.join(conference: conf)
+        }, fail: { error in
+            print(error)
+        })
+    }
+}
