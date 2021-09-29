@@ -1,0 +1,73 @@
+//
+//  SignInViewController.swift
+//  DyrdekMachine
+//
+//  Created by Thaddeus Lorenz on 7/25/21.
+//
+
+import UIKit
+
+class SignInViewController: UIViewController, UITextFieldDelegate {
+
+    @IBOutlet weak var titleLabel: UILabel!
+    @IBOutlet weak var enterCodeTextField: UITextField!
+    @IBOutlet weak var joinButton: UIButton!
+    @IBOutlet weak var notMemberLabel: UILabel!
+    @IBOutlet weak var joinWaitingListButton: UIButton!
+    
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        
+        // modifies border of text field... uses a line as opposed to default textfield box
+        let bottomLine = CALayer()
+        bottomLine.frame = CGRect(x: 0, y: enterCodeTextField.frame.height - 2, width: enterCodeTextField.frame.width, height: 2)
+        bottomLine.backgroundColor = #colorLiteral(red: 1, green: 1, blue: 1, alpha: 1)
+        
+        // modifies elements within textfield
+        enterCodeTextField.borderStyle = .none
+        enterCodeTextField.layer.addSublayer(bottomLine)
+        let redPlaceholderText = NSAttributedString(string: "Enter Code",
+                                                    attributes: [NSAttributedString.Key.foregroundColor: UIColor.white])
+        enterCodeTextField.attributedPlaceholder = redPlaceholderText
+        
+        
+        
+        // dismisses keyboard when user clicks out of bounds of keyboard
+        let tap = UITapGestureRecognizer(target: self, action: #selector(UIInputViewController.dismissKeyboard))
+        view.addGestureRecognizer(tap)
+        self.enterCodeTextField.delegate = self
+
+    }
+    
+    //Calls this function when the tap is recognized.
+    @objc func dismissKeyboard() {
+        //Causes the view (or one of its embedded text fields) to resign the first responder status.
+        view.endEditing(true)
+    }
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+
+        //textField code
+
+        textField.resignFirstResponder()
+        
+        let correctPassword = "dyrdekmachine"
+    
+        if enterCodeTextField.text != correctPassword{
+            let alert = UIAlertController(title: "Please try again", message: "The password you entered is not correct.", preferredStyle: .alert)
+
+            alert.addAction(UIAlertAction(title: "Try again", style: .cancel, handler: nil))
+
+            self.present(alert, animated: true)
+        } else {
+            print("correct")
+            performAction()
+
+        }
+        return true
+    }
+
+    func performAction() {
+        performSegue(withIdentifier: "toLobby", sender: self)
+    }
+
+}
