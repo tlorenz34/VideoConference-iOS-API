@@ -1,0 +1,87 @@
+//
+//  ViewController.swift
+//  DyrdekMachine
+//
+//  Created by Thaddeus Lorenz on 7/25/21.
+//
+
+import UIKit
+import Foundation
+import StreamChat
+
+class JoinViewController: UIViewController {
+    
+    let attendeeButton = UIButton()
+    let speakerButton = UIButton()
+    
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        
+        title = "Join"
+        
+        setupViews()
+        setupConstraints()
+        setupHandlers()
+    }
+}
+extension JoinViewController {
+    func setupViews() {
+        setupAttendeeButton()
+        setupSpeakerButton()
+    }
+    
+    func setupAttendeeButton() {
+        attendeeButton.translatesAutoresizingMaskIntoConstraints = false
+        attendeeButton.setTitleColor(#colorLiteral(red: 0, green: 0, blue: 0, alpha: 1), for: .normal)
+        attendeeButton.setTitle("Attendee", for: .normal)
+        attendeeButton.titleLabel?.font = .systemFont(ofSize: 22)
+        attendeeButton.backgroundColor = #colorLiteral(red: 1.0, green: 1.0, blue: 1.0, alpha: 1.0)
+        attendeeButton.widthAnchor.constraint(equalToConstant: 200).isActive = true
+        attendeeButton.heightAnchor.constraint(equalToConstant: 50).isActive = true
+
+        view.addSubview(attendeeButton)
+    }
+    
+    func setupSpeakerButton() {
+        speakerButton.translatesAutoresizingMaskIntoConstraints = false
+        speakerButton.setTitleColor(#colorLiteral(red: 1.0, green: 1.0, blue: 1.0, alpha: 1.0), for: .normal)
+        speakerButton.setTitle("Speaker", for: .normal)
+        speakerButton.titleLabel?.font = .systemFont(ofSize: 22)
+        speakerButton.backgroundColor = #colorLiteral(red: 0.8587197661, green: 0.1951218247, blue: 0.1534835994, alpha: 1)
+        speakerButton.widthAnchor.constraint(equalToConstant: 200).isActive = true
+        speakerButton.heightAnchor.constraint(equalToConstant: 50).isActive = true
+        
+        view.addSubview(speakerButton)
+    }
+}
+extension JoinViewController {
+    func setupConstraints() {
+        view.addConstraints([
+            attendeeButton.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            attendeeButton.centerYAnchor.constraint(equalTo: view.safeAreaLayoutGuide.centerYAnchor, constant: -100),
+            speakerButton.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            speakerButton.centerYAnchor.constraint(equalTo: attendeeButton.centerYAnchor, constant: 100)
+        ])
+    }
+}
+extension JoinViewController {
+    func setupHandlers() {
+        attendeeButton.addTarget(self, action: #selector(handleAttendeeButtonPress), for: .touchUpInside)
+        speakerButton.addTarget(self, action: #selector(handleSpeakerButtonPress), for: .touchUpInside)
+    }
+    
+    @objc func handleAttendeeButtonPress() {
+        let roomVC = RoomViewController()
+        roomVC.setupAttendee()
+        
+        navigationController?.pushViewController(roomVC, animated: true)
+    }
+    
+    @objc func handleSpeakerButtonPress() {
+        let roomVC = RoomViewController()
+        roomVC.setupSpeaker()
+        
+        navigationController?.pushViewController(roomVC, animated: true)
+    }
+}
+
